@@ -1,0 +1,6 @@
+---
+- name: Run rsync
+  include_tasks: rsync.yml
+  loop: "{{ rsync_directories }}"
+  loop_control:
+    loop_var: rsync

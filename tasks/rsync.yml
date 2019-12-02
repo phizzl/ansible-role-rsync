@@ -1,0 +1,48 @@
+---
+- set_fact:
+    rsync_opts: []
+
+- name: Build rsync exclusion list
+  set_fact:
+    rsync_opts: "{{ rsync_opts }} + [ '--exclude={{ item }}' ]"
+  with_items: "{{ rsync.excludes }}"
+  when: rsync.excludes is defined
+
+- name: Run pre sync commands
+  shell: "{{ item }}"
+  loop: "{{ rsync.pre_sync_commands }}"
+  when: rsync.pre_sync_commands is defined
+
+- name: Syncronize directory
+  synchronize:
+    src: "{{ rsync.src }}"
+    dest: "{{ rsync.dest }}"
+    rsync_opts: "{{ rsync_opts }}"
+    archive: "{{ rsync.archive | default(omit) }}"
+    checksum: "{{ rsync.checksum | default(omit) }}"
+    compress: "{{ rsync.compress | default(omit) }}"
+    copy_links: "{{ rsync.copy_links | default(omit) }}"
+    delete: "{{ rsync.delete | default(omit) }}"
+    dest_port: "{{ rsync.dest_port | default(omit) }}"
+    dirs: "{{ rsync.dirs | default(omit) }}"
+    existing_only: "{{ rsync.existing_only | default(omit) }}"
+    group: "{{ rsync.group | default(omit) }}"
+    link_dest: "{{ rsync.link_dest | default(omit) }}"
+    links: "{{ rsync.links | default(omit) }}"
+    mode: "{{ rsync.mode | default(omit) }}"
+    owner: "{{ rsync.owner | default(omit) }}"
+    partial: "{{ rsync.partial | default(omit) }}"
+    perms: "{{ rsync.perms | default(omit) }}"
+    private_key: "{{ rsync.private_key | default(omit) }}"
+    recursive: "{{ rsync.recursive | default(omit) }}"
+    rsync_path: "{{ rsync.rsync_path | default(omit) }}"
+    rsync_timeout: "{{ rsync.rsync_timeout | default(omit) }}"
+    set_remote_user: "{{ rsync.set_remote_user | default(omit) }}"
+    times: "{{ rsync.times | default(omit) }}"
+    use_ssh_args: "{{ rsync.use_ssh_args | default(omit) }}"
+    verify_host: "{{ rsync.verify_host | default(omit) }}"
+
+- name: Run post sync commands
+  shell: "{{ item }}"
+  loop: "{{ rsync.post_sync_commands }}"
+  when: rsync.post_sync_commands is defined
